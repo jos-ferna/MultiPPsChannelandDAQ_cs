@@ -18,6 +18,7 @@ using System.Windows.Forms;
 using NationalInstruments.DAQmx;
 using NationalInstruments.ModularInstruments.NIDCPower;
 using NationalInstruments.ModularInstruments.SystemServices.DeviceServices;
+using System.Threading;
 
 namespace NationalInstruments.Examples.SinglePointMultiChannelSync
 {
@@ -31,6 +32,8 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
         bool taskRunning = false;
         Task myTask;
         int DAQSamples = 10;    //Set the amount of samples to be writen with the DAQ card
+        double DAQrate = 10000;
+        int DAQNumberChannels = 64;
 
         public MainForm()
         {
@@ -85,6 +88,22 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
         }
 
         void LoadDCPowerDeviceNames()
+        {
+            using (ModularInstrumentsSystem dcPowerDevices = new ModularInstrumentsSystem("NI-DCPower"))
+            {
+                foreach (DeviceInfo device in dcPowerDevices.DeviceCollection)
+                {
+                    masterConfigurationResourceNameComboBox.Items.Add(device.Name);
+                    ((DataGridViewComboBoxColumn)(slavesConfigurationDataGridView.Columns[1])).Items.Add(device.Name);
+                }
+            }
+            if (masterConfigurationResourceNameComboBox.Items.Count > 0)
+            {
+                masterConfigurationResourceNameComboBox.SelectedIndex = 0;
+            }
+        }
+
+        void LoadDAQDeviceNames()
         {
             using (ModularInstrumentsSystem dcPowerDevices = new ModularInstrumentsSystem("NI-DCPower"))
             {
@@ -240,7 +259,39 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
         {
             ChangeControlState(false);
             Start();
-            ChangeControlState(true);
+        }
+
+        private void stopButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                statusCheckTimer.Enabled = false;
+                if (myTask != null)
+                {
+                    myTask.Stop();
+                }
+                if (masterSession != null)
+                {
+                    masterSession.Utility.Reset();
+                }
+                if (slaveSession != null)
+                {
+                    for (int i = 0; i < NumberOfSlaveDevices; i++)
+                    {
+                        slaveSession[i].Utility.Reset();
+                    }
+                }
+                ChangeControlState(true);
+                stopButton.Enabled = false;
+            }
+            catch (Exception x)
+            {
+                MessageBox.Show(x.Message);
+            }
+            finally
+            {
+                CloseSession();
+            }
         }
 
         void mainForm_Closing(object sender, FormClosingEventArgs e)
@@ -250,10 +301,14 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
 
         void Start()
         {
-            double[] Data = new double[DAQSamples];
-            for (int i = 0; i < Data.Length; i++)
+            double[,] Data = new double[DAQNumberChannels, DAQSamples];
+            for (int i = 0; i < DAQNumberChannels; i++)
             {
-                Data[i] = DAQVoltageOut;
+                for (int j = 0; j < DAQSamples; j++)
+                {
+                    Data[i, j] = DAQVoltageOut;
+                }
+                    
             }
 
             try
@@ -312,12 +367,16 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
                 #region Configure DAQ task
 
                 myTask = new Task();
-                myTask.AOChannels.CreateVoltageChannel(
-                    DAQResourceName, 
-                    "aoChannel",
+                for (int i = 0; i < DAQNumberChannels; i++)
+                {
+                    myTask.AOChannels.CreateVoltageChannel(
+                    DAQResourceName.Split('/')[0] + "/ao" + i.ToString(),
+                    "aoChannel_" + i.ToString(),
                         DAQMinVoltageLevel,
                         DAQMaxVoltageLevel,
                         AOVoltageUnits.Volts);
+                }
+                
 
                 // Verify the task
                 myTask.Control(TaskAction.Verify);
@@ -325,19 +384,17 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
                 // Configure the sample clock. 10 samples at a rate of 10KHz will take 1 ms
                 myTask.Timing.ConfigureSampleClock(
                     "", // onboard clock
-                    10000.0,
+                    DAQrate,
                     SampleClockActiveEdge.Rising,
-                    SampleQuantityMode.FiniteSamples,
+                    SampleQuantityMode.ContinuousSamples,
                     DAQSamples
                     );
 
                 // Setup the triggering
-                myTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/PXI1Slot2/PXI_Trig0", DigitalEdgeStartTriggerEdge.Rising);
+                //myTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/PXI1Slot2/PXI_Trig0", DigitalEdgeStartTriggerEdge.Rising);
 
-                AnalogSingleChannelWriter writer = new AnalogSingleChannelWriter(myTask.Stream);
-
-                // Setup the Task Done event
-                myTask.Done += new TaskDoneEventHandler(myTask_Done);
+                //AnalogSingleChannelWriter writer = new AnalogSingleChannelWriter(myTask.Stream);
+                AnalogMultiChannelWriter writer = new AnalogMultiChannelWriter(myTask.Stream);
                 #endregion
 
                 //Initiate DAQ device, The DAQ device will be waiting for the Source Trigger
@@ -373,18 +430,14 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
                     slavesMeasurementsDataGridView.Rows[i].Cells[2].Value = result.CurrentMeasurements[0].ToString("E");
                 }
 
-                masterSession.Utility.Reset();
-                for (int i = 0; i < NumberOfSlaveDevices; i++)
-                {
-                    slaveSession[i].Utility.Reset();
-                }
+                stopButton.Enabled = true;
+
+                statusCheckTimer.Enabled = true;
             }
             catch (Exception ex)
             {
+                statusCheckTimer.Enabled = false;
                 ShowError(ex);
-            }
-            finally
-            {
                 CloseSession();
             }
         }
@@ -469,18 +522,29 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
             this.Refresh();
         }
 
-        private void myTask_Done(object sender, TaskDoneEventArgs e)
+        private void statusCheckTimer_Tick(object sender, System.EventArgs e)
         {
-            if (e.Error != null)
+            try
             {
-                MessageBox.Show(e.Error.Message);
+                // Getting myTask.IsDone also checks for errors that would prematurely
+                // halt the continuous generation.
+                if (myTask.IsDone)
+                {
+                    statusCheckTimer.Enabled = false;
+                    myTask.Stop();
+                    CloseSession();
+                    startButton.Enabled = true;
+                    stopButton.Enabled = false;
+                }
             }
-
-            if (myTask != null)
+            catch (DaqException ex)
             {
-                myTask.Dispose();
+                statusCheckTimer.Enabled = false;
+                System.Windows.Forms.MessageBox.Show(ex.Message);
+                CloseSession();
+                startButton.Enabled = true;
+                stopButton.Enabled = false;
             }
         }
-
     }
 }

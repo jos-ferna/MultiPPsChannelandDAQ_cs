@@ -28,6 +28,7 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
@@ -70,14 +71,16 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
             this.slavesMeasurementsVoltageColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.slavesMeasurementsCurrentColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DAQChannelsParametersGroupBox = new System.Windows.Forms.GroupBox();
+            this.DAQmaximumValue = new System.Windows.Forms.NumericUpDown();
+            this.DAQminimumValue = new System.Windows.Forms.NumericUpDown();
             this.physicalChannelComboBox = new System.Windows.Forms.ComboBox();
             this.maximumValueLabel = new System.Windows.Forms.Label();
             this.minimumValueLabel = new System.Windows.Forms.Label();
             this.physicalChannelLabel = new System.Windows.Forms.Label();
             this.voltageOutputLabel = new System.Windows.Forms.Label();
-            this.DAQminimumValue = new System.Windows.Forms.NumericUpDown();
-            this.DAQmaximumValue = new System.Windows.Forms.NumericUpDown();
             this.DAQvoltageOutput = new System.Windows.Forms.NumericUpDown();
+            this.stopButton = new System.Windows.Forms.Button();
+            this.statusCheckTimer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.masterConfigurationCurrentLimitNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.masterConfigurationVoltageLevelNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.masterConfigurationSourceDelayNumeric)).BeginInit();
@@ -88,8 +91,8 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
             this.slavesMeasurementsGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.slavesMeasurementsDataGridView)).BeginInit();
             this.DAQChannelsParametersGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.DAQminimumValue)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DAQmaximumValue)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DAQminimumValue)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DAQvoltageOutput)).BeginInit();
             this.SuspendLayout();
             // 
@@ -525,6 +528,57 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
             this.DAQChannelsParametersGroupBox.TabStop = false;
             this.DAQChannelsParametersGroupBox.Text = "DAQ Channels Parameters";
             // 
+            // DAQmaximumValue
+            // 
+            this.DAQmaximumValue.DecimalPlaces = 6;
+            this.DAQmaximumValue.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.DAQmaximumValue.Location = new System.Drawing.Point(110, 92);
+            this.DAQmaximumValue.Maximum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            0});
+            this.DAQmaximumValue.Minimum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            -2147483648});
+            this.DAQmaximumValue.Name = "DAQmaximumValue";
+            this.DAQmaximumValue.Size = new System.Drawing.Size(90, 20);
+            this.DAQmaximumValue.TabIndex = 14;
+            this.DAQmaximumValue.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            // 
+            // DAQminimumValue
+            // 
+            this.DAQminimumValue.DecimalPlaces = 6;
+            this.DAQminimumValue.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.DAQminimumValue.Location = new System.Drawing.Point(110, 58);
+            this.DAQminimumValue.Maximum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            0});
+            this.DAQminimumValue.Minimum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            -2147483648});
+            this.DAQminimumValue.Name = "DAQminimumValue";
+            this.DAQminimumValue.Size = new System.Drawing.Size(90, 20);
+            this.DAQminimumValue.TabIndex = 12;
+            // 
             // physicalChannelComboBox
             // 
             this.physicalChannelComboBox.Location = new System.Drawing.Point(110, 22);
@@ -569,57 +623,6 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
             this.voltageOutputLabel.TabIndex = 9;
             this.voltageOutputLabel.Text = "Voltage Output (V):";
             // 
-            // DAQminimumValue
-            // 
-            this.DAQminimumValue.DecimalPlaces = 6;
-            this.DAQminimumValue.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.DAQminimumValue.Location = new System.Drawing.Point(110, 58);
-            this.DAQminimumValue.Maximum = new decimal(new int[] {
-            -1,
-            -1,
-            -1,
-            0});
-            this.DAQminimumValue.Minimum = new decimal(new int[] {
-            -1,
-            -1,
-            -1,
-            -2147483648});
-            this.DAQminimumValue.Name = "DAQminimumValue";
-            this.DAQminimumValue.Size = new System.Drawing.Size(90, 20);
-            this.DAQminimumValue.TabIndex = 12;
-            // 
-            // DAQmaximumValue
-            // 
-            this.DAQmaximumValue.DecimalPlaces = 6;
-            this.DAQmaximumValue.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.DAQmaximumValue.Location = new System.Drawing.Point(110, 92);
-            this.DAQmaximumValue.Maximum = new decimal(new int[] {
-            -1,
-            -1,
-            -1,
-            0});
-            this.DAQmaximumValue.Minimum = new decimal(new int[] {
-            -1,
-            -1,
-            -1,
-            -2147483648});
-            this.DAQmaximumValue.Name = "DAQmaximumValue";
-            this.DAQmaximumValue.Size = new System.Drawing.Size(90, 20);
-            this.DAQmaximumValue.TabIndex = 14;
-            this.DAQmaximumValue.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            // 
             // DAQvoltageOutput
             // 
             this.DAQvoltageOutput.DecimalPlaces = 6;
@@ -648,12 +651,28 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
             0,
             0});
             // 
+            // stopButton
+            // 
+            this.stopButton.Enabled = false;
+            this.stopButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.stopButton.Location = new System.Drawing.Point(546, 304);
+            this.stopButton.Name = "stopButton";
+            this.stopButton.Size = new System.Drawing.Size(75, 23);
+            this.stopButton.TabIndex = 16;
+            this.stopButton.Text = "Stop";
+            this.stopButton.Click += new System.EventHandler(this.stopButton_Click);
+            //
+            // statusCheckTimer
+            // 
+            this.statusCheckTimer.Tick += new System.EventHandler(this.statusCheckTimer_Tick);
+            // 
             // MainForm
             // 
             this.AcceptButton = this.startButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(861, 346);
+            this.Controls.Add(this.stopButton);
             this.Controls.Add(this.DAQvoltageOutput);
             this.Controls.Add(this.DAQChannelsParametersGroupBox);
             this.Controls.Add(this.slavesMeasurementsGroupBox);
@@ -681,8 +700,8 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
             this.slavesMeasurementsGroupBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.slavesMeasurementsDataGridView)).EndInit();
             this.DAQChannelsParametersGroupBox.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.DAQminimumValue)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.DAQmaximumValue)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DAQminimumValue)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.DAQvoltageOutput)).EndInit();
             this.ResumeLayout(false);
 
@@ -728,5 +747,7 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
         private System.Windows.Forms.NumericUpDown DAQmaximumValue;
         private System.Windows.Forms.NumericUpDown DAQminimumValue;
         private System.Windows.Forms.NumericUpDown DAQvoltageOutput;
+        private System.Windows.Forms.Button stopButton;
+        private System.Windows.Forms.Timer statusCheckTimer;
     }
 }
