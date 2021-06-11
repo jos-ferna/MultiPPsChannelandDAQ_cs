@@ -15,6 +15,7 @@
 
 using System;
 using System.Windows.Forms;
+using NationalInstruments.DAQmx;
 using NationalInstruments.ModularInstruments.NIDCPower;
 using NationalInstruments.ModularInstruments.SystemServices.DeviceServices;
 
@@ -27,11 +28,19 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
         NIDCPower masterSession;
         NIDCPower[] slaveSession = new NIDCPower[NumberOfSlaveDevices];
 
+        bool taskRunning = false;
+        Task myTask;
+        int DAQSamples = 10;    //Set the amount of samples to be writen with the DAQ card
+
         public MainForm()
         {
             InitializeComponent();
             ConfigureSlavesConfigurationDataGridView();
             ConfigureSlavesMeasurementDataGridView();
+
+            physicalChannelComboBox.Items.AddRange(DaqSystem.Local.GetPhysicalChannels(PhysicalChannelTypes.AO, PhysicalChannelAccess.External));
+            if (physicalChannelComboBox.Items.Count > 0)
+                physicalChannelComboBox.SelectedIndex = 0;
         }
 
         #region MainForm initial configuration
@@ -195,6 +204,38 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
         }
         #endregion
 
+        string DAQResourceName
+        {
+            get
+            {
+                return this.physicalChannelComboBox.Text;
+            }
+        }
+        
+        double DAQMinVoltageLevel
+        {
+            get
+            {
+                return decimal.ToDouble(this.DAQminimumValue.Value);
+            }
+        }
+
+        double DAQMaxVoltageLevel
+        {
+            get
+            {
+                return decimal.ToDouble(this.DAQmaximumValue.Value);
+            }
+        }
+
+        double DAQVoltageOut
+        {
+            get
+            {
+                return decimal.ToDouble(this.DAQvoltageOutput.Value);
+            }
+        }
+
         void startButton_Click(object sender, System.EventArgs e)
         {
             ChangeControlState(false);
@@ -209,6 +250,12 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
 
         void Start()
         {
+            double[] Data = new double[DAQSamples];
+            for (int i = 0; i < Data.Length; i++)
+            {
+                Data[i] = DAQVoltageOut;
+            }
+
             try
             {
                 InitializeDCPowerSessions();
@@ -261,6 +308,41 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
                     slaveSession[i].Control.Commit();
                 }
                 #endregion
+
+                #region Configure DAQ task
+
+                myTask = new Task();
+                myTask.AOChannels.CreateVoltageChannel(
+                    DAQResourceName, 
+                    "aoChannel",
+                        DAQMinVoltageLevel,
+                        DAQMaxVoltageLevel,
+                        AOVoltageUnits.Volts);
+
+                // Verify the task
+                myTask.Control(TaskAction.Verify);
+
+                // Configure the sample clock. 10 samples at a rate of 10KHz will take 1 ms
+                myTask.Timing.ConfigureSampleClock(
+                    "", // onboard clock
+                    10000.0,
+                    SampleClockActiveEdge.Rising,
+                    SampleQuantityMode.FiniteSamples,
+                    DAQSamples
+                    );
+
+                // Setup the triggering
+                myTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/PXI1Slot2/PXI_Trig0", DigitalEdgeStartTriggerEdge.Rising);
+
+                AnalogSingleChannelWriter writer = new AnalogSingleChannelWriter(myTask.Stream);
+
+                // Setup the Task Done event
+                myTask.Done += new TaskDoneEventHandler(myTask_Done);
+                #endregion
+
+                //Initiate DAQ device, The DAQ device will be waiting for the Source Trigger
+                writer.WriteMultiSample(false, Data);
+                myTask.Start();
 
                 // Initiate the slave device(s) and then initiate the master device to start generation
                 // and acquisition. The order here is significant.
@@ -344,6 +426,10 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
                         }
                     }
                 }
+                if (myTask != null)
+                {
+                    myTask.Dispose();
+                }
             }
             catch (Exception ex)
             {
@@ -373,11 +459,27 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
 
         void ChangeControlState(bool flag)
         {
+            taskRunning = !flag;
             masterConfigurationGroupBox.Enabled = flag;
             slavesConfigurationGroupBox.Enabled = flag;
+            DAQChannelsParametersGroupBox.Enabled = flag;
+            DAQvoltageOutput.Enabled = flag;
             startButton.Enabled = flag;
             masterConfigurationResourceNameComboBox.Select();
             this.Refresh();
+        }
+
+        private void myTask_Done(object sender, TaskDoneEventArgs e)
+        {
+            if (e.Error != null)
+            {
+                MessageBox.Show(e.Error.Message);
+            }
+
+            if (myTask != null)
+            {
+                myTask.Dispose();
+            }
         }
 
     }

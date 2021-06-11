@@ -69,6 +69,15 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
             this.slavesMesurementsSlaveNumberColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.slavesMeasurementsVoltageColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.slavesMeasurementsCurrentColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DAQChannelsParametersGroupBox = new System.Windows.Forms.GroupBox();
+            this.physicalChannelComboBox = new System.Windows.Forms.ComboBox();
+            this.maximumValueLabel = new System.Windows.Forms.Label();
+            this.minimumValueLabel = new System.Windows.Forms.Label();
+            this.physicalChannelLabel = new System.Windows.Forms.Label();
+            this.voltageOutputLabel = new System.Windows.Forms.Label();
+            this.DAQminimumValue = new System.Windows.Forms.NumericUpDown();
+            this.DAQmaximumValue = new System.Windows.Forms.NumericUpDown();
+            this.DAQvoltageOutput = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.masterConfigurationCurrentLimitNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.masterConfigurationVoltageLevelNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.masterConfigurationSourceDelayNumeric)).BeginInit();
@@ -78,6 +87,10 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
             ((System.ComponentModel.ISupportInitialize)(this.slavesConfigurationDataGridView)).BeginInit();
             this.slavesMeasurementsGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.slavesMeasurementsDataGridView)).BeginInit();
+            this.DAQChannelsParametersGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.DAQminimumValue)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DAQmaximumValue)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DAQvoltageOutput)).BeginInit();
             this.SuspendLayout();
             // 
             // masterConfigurationCurrentLimitLabel
@@ -193,7 +206,7 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
             // 
             // startButton
             // 
-            this.startButton.Location = new System.Drawing.Point(223, 344);
+            this.startButton.Location = new System.Drawing.Point(741, 304);
             this.startButton.Name = "startButton";
             this.startButton.Size = new System.Drawing.Size(75, 23);
             this.startButton.TabIndex = 7;
@@ -218,7 +231,7 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
             this.masterConfigurationGroupBox.Size = new System.Drawing.Size(231, 164);
             this.masterConfigurationGroupBox.TabIndex = 0;
             this.masterConfigurationGroupBox.TabStop = false;
-            this.masterConfigurationGroupBox.Text = "Master Configuration";
+            this.masterConfigurationGroupBox.Text = "SMU Master Configuration";
             // 
             // masterConfigurationChannelNameTextBox
             // 
@@ -266,7 +279,7 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
             this.masterMeasurementsGroupBox.Size = new System.Drawing.Size(249, 74);
             this.masterMeasurementsGroupBox.TabIndex = 1;
             this.masterMeasurementsGroupBox.TabStop = false;
-            this.masterMeasurementsGroupBox.Text = "Master Measurements";
+            this.masterMeasurementsGroupBox.Text = "SMU Master Measurements";
             // 
             // masterMeasurementsVoltageTextBox
             // 
@@ -324,7 +337,7 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
             this.slavesConfigurationGroupBox.Size = new System.Drawing.Size(496, 96);
             this.slavesConfigurationGroupBox.TabIndex = 4;
             this.slavesConfigurationGroupBox.TabStop = false;
-            this.slavesConfigurationGroupBox.Text = "Slave(s) Configuration";
+            this.slavesConfigurationGroupBox.Text = "SMU Slave(s) Configuration";
             // 
             // slavesConfigurationDataGridView
             // 
@@ -423,7 +436,7 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
             this.slavesMeasurementsGroupBox.Size = new System.Drawing.Size(249, 96);
             this.slavesMeasurementsGroupBox.TabIndex = 2;
             this.slavesMeasurementsGroupBox.TabStop = false;
-            this.slavesMeasurementsGroupBox.Text = "Slave(s) Measurements";
+            this.slavesMeasurementsGroupBox.Text = "SMU Slave(s) Measurements";
             // 
             // slavesMeasurementsDataGridView
             // 
@@ -497,17 +510,158 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
             this.slavesMeasurementsCurrentColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.slavesMeasurementsCurrentColumn.Width = 90;
             // 
+            // DAQChannelsParametersGroupBox
+            // 
+            this.DAQChannelsParametersGroupBox.Controls.Add(this.DAQmaximumValue);
+            this.DAQChannelsParametersGroupBox.Controls.Add(this.DAQminimumValue);
+            this.DAQChannelsParametersGroupBox.Controls.Add(this.physicalChannelComboBox);
+            this.DAQChannelsParametersGroupBox.Controls.Add(this.maximumValueLabel);
+            this.DAQChannelsParametersGroupBox.Controls.Add(this.minimumValueLabel);
+            this.DAQChannelsParametersGroupBox.Controls.Add(this.physicalChannelLabel);
+            this.DAQChannelsParametersGroupBox.Location = new System.Drawing.Point(546, 12);
+            this.DAQChannelsParametersGroupBox.Name = "DAQChannelsParametersGroupBox";
+            this.DAQChannelsParametersGroupBox.Size = new System.Drawing.Size(296, 127);
+            this.DAQChannelsParametersGroupBox.TabIndex = 10;
+            this.DAQChannelsParametersGroupBox.TabStop = false;
+            this.DAQChannelsParametersGroupBox.Text = "DAQ Channels Parameters";
+            // 
+            // physicalChannelComboBox
+            // 
+            this.physicalChannelComboBox.Location = new System.Drawing.Point(110, 22);
+            this.physicalChannelComboBox.Name = "physicalChannelComboBox";
+            this.physicalChannelComboBox.Size = new System.Drawing.Size(160, 21);
+            this.physicalChannelComboBox.TabIndex = 7;
+            this.physicalChannelComboBox.Text = "Dev1/ao0";
+            // 
+            // maximumValueLabel
+            // 
+            this.maximumValueLabel.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.maximumValueLabel.Location = new System.Drawing.Point(6, 94);
+            this.maximumValueLabel.Name = "maximumValueLabel";
+            this.maximumValueLabel.Size = new System.Drawing.Size(112, 16);
+            this.maximumValueLabel.TabIndex = 12;
+            this.maximumValueLabel.Text = "Maximum Value (V):";
+            // 
+            // minimumValueLabel
+            // 
+            this.minimumValueLabel.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.minimumValueLabel.Location = new System.Drawing.Point(6, 60);
+            this.minimumValueLabel.Name = "minimumValueLabel";
+            this.minimumValueLabel.Size = new System.Drawing.Size(104, 16);
+            this.minimumValueLabel.TabIndex = 8;
+            this.minimumValueLabel.Text = "Minimum Value (V):";
+            // 
+            // physicalChannelLabel
+            // 
+            this.physicalChannelLabel.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.physicalChannelLabel.Location = new System.Drawing.Point(6, 24);
+            this.physicalChannelLabel.Name = "physicalChannelLabel";
+            this.physicalChannelLabel.Size = new System.Drawing.Size(104, 16);
+            this.physicalChannelLabel.TabIndex = 6;
+            this.physicalChannelLabel.Text = "Physical Channel:";
+            // 
+            // voltageOutputLabel
+            // 
+            this.voltageOutputLabel.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.voltageOutputLabel.Location = new System.Drawing.Point(552, 169);
+            this.voltageOutputLabel.Name = "voltageOutputLabel";
+            this.voltageOutputLabel.Size = new System.Drawing.Size(104, 16);
+            this.voltageOutputLabel.TabIndex = 9;
+            this.voltageOutputLabel.Text = "Voltage Output (V):";
+            // 
+            // DAQminimumValue
+            // 
+            this.DAQminimumValue.DecimalPlaces = 6;
+            this.DAQminimumValue.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.DAQminimumValue.Location = new System.Drawing.Point(110, 58);
+            this.DAQminimumValue.Maximum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            0});
+            this.DAQminimumValue.Minimum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            -2147483648});
+            this.DAQminimumValue.Name = "DAQminimumValue";
+            this.DAQminimumValue.Size = new System.Drawing.Size(90, 20);
+            this.DAQminimumValue.TabIndex = 12;
+            // 
+            // DAQmaximumValue
+            // 
+            this.DAQmaximumValue.DecimalPlaces = 6;
+            this.DAQmaximumValue.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.DAQmaximumValue.Location = new System.Drawing.Point(110, 92);
+            this.DAQmaximumValue.Maximum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            0});
+            this.DAQmaximumValue.Minimum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            -2147483648});
+            this.DAQmaximumValue.Name = "DAQmaximumValue";
+            this.DAQmaximumValue.Size = new System.Drawing.Size(90, 20);
+            this.DAQmaximumValue.TabIndex = 14;
+            this.DAQmaximumValue.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            // 
+            // DAQvoltageOutput
+            // 
+            this.DAQvoltageOutput.DecimalPlaces = 6;
+            this.DAQvoltageOutput.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.DAQvoltageOutput.Location = new System.Drawing.Point(656, 167);
+            this.DAQvoltageOutput.Maximum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            0});
+            this.DAQvoltageOutput.Minimum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            -2147483648});
+            this.DAQvoltageOutput.Name = "DAQvoltageOutput";
+            this.DAQvoltageOutput.Size = new System.Drawing.Size(90, 20);
+            this.DAQvoltageOutput.TabIndex = 15;
+            this.DAQvoltageOutput.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            // 
             // MainForm
             // 
             this.AcceptButton = this.startButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(520, 378);
+            this.ClientSize = new System.Drawing.Size(861, 346);
+            this.Controls.Add(this.DAQvoltageOutput);
+            this.Controls.Add(this.DAQChannelsParametersGroupBox);
             this.Controls.Add(this.slavesMeasurementsGroupBox);
             this.Controls.Add(this.slavesConfigurationGroupBox);
             this.Controls.Add(this.messageRichTextBox);
             this.Controls.Add(this.masterMeasurementsGroupBox);
             this.Controls.Add(this.masterConfigurationGroupBox);
+            this.Controls.Add(this.voltageOutputLabel);
             this.Controls.Add(this.startButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -526,6 +680,10 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
             ((System.ComponentModel.ISupportInitialize)(this.slavesConfigurationDataGridView)).EndInit();
             this.slavesMeasurementsGroupBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.slavesMeasurementsDataGridView)).EndInit();
+            this.DAQChannelsParametersGroupBox.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.DAQminimumValue)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DAQmaximumValue)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DAQvoltageOutput)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -561,6 +719,14 @@ namespace NationalInstruments.Examples.SinglePointMultiChannelSync
         private System.Windows.Forms.DataGridViewTextBoxColumn slavesConfigurationChannelNameColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn slavesConfigurationVoltageLevelColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn slavesConfigurationCurrentLimitColumn;
-
+        private System.Windows.Forms.GroupBox DAQChannelsParametersGroupBox;
+        private System.Windows.Forms.ComboBox physicalChannelComboBox;
+        private System.Windows.Forms.Label maximumValueLabel;
+        private System.Windows.Forms.Label minimumValueLabel;
+        private System.Windows.Forms.Label physicalChannelLabel;
+        private System.Windows.Forms.Label voltageOutputLabel;
+        private System.Windows.Forms.NumericUpDown DAQmaximumValue;
+        private System.Windows.Forms.NumericUpDown DAQminimumValue;
+        private System.Windows.Forms.NumericUpDown DAQvoltageOutput;
     }
 }

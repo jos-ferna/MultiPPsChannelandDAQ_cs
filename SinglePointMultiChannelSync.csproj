@@ -38,6 +38,7 @@
     <Reference Include="Ivi.DCPwr" />
     <Reference Include="Ivi.Driver" />
     <Reference Include="NationalInstruments.Common" />
+    <Reference Include="NationalInstruments.DAQmx, Version=20.1.45.49152, Culture=neutral, PublicKeyToken=4febd62461bf11a4, processorArchitecture=x86" />
     <Reference Include="NationalInstruments.ModularInstruments.Common" />
     <Reference Include="NationalInstruments.ModularInstruments.ModularInstrumentsSystem" />
     <Reference Include="NationalInstruments.ModularInstruments.NIDCPower.Fx45" />
